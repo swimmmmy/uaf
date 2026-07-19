@@ -71,7 +71,7 @@ Laptop *new_rental = malloc(sizeof(Laptop));   // 다른 멘티가 같은 자리
 strcpy(new_rental->owner, "Mingyo");
 new_rental->asset_no = 12;
 printf("최근 대여 기록 조회: %s (asset=%d)\n",
-       last_rental_record->owner, last_rental_record->asset_id);  // UAF READ
+       last_rental_record->owner, last_rental_record->asset_no);  // UAF READ
 ```
 
 전체 코드는 [`my_uaf.c`](my_uaf.c) 참고.
@@ -158,6 +158,6 @@ NX가 켜져 있어서 셸코드 대신 이미 바이너리 안에 있는 `win` 
 
 ### 결론
 
-핵심은 `free(obj)` 후에도 `obj`가 NULL로 바뀌지 않아 이미 해제된 객체를 계속 참조할 수 있었다는 점입니다. `stash`에서 같은 크기의 메모리를 다시 할당하면, 같은 크기로 다시 할당했더니 방금 free한 메모리 주소가 다시 반환되는 것을 확인했습니다. 이때 입력한 데이터가 `Obj` 구조체의 시작 부분에 덮이면서 `greet` 함수 포인터가 `win` 주소로 바뀌었습니다. 이후 greet 메뉴를 선택하면 `obj->greet(obj)`가 호출되고, 실제로는 `win()`이 실행되어 flag가 출력되었습니다. 실습을 통해 free된 메모리가 재할당되면서 함수 포인터가 덮이는 과정을 pwndbg에서 직접 확인할 수 있었습니다.
+이번 문제에서는 free(obj) 이후에도 obj가 그대로 남아 있어서, 이미 해제된 객체를 계속 사용할 수 있었습니다. stash에서 같은 크기로 다시 할당했더니, 방금 free한 메모리 주소가 그대로 다시 반환되는 것을 확인했습니다. 이때 입력한 데이터가 `Obj` 구조체의 시작 부분에 덮이면서 `greet` 함수 포인터가 `win` 주소로 바뀌었습니다. 이후 greet 메뉴를 선택하면 `obj->greet(obj)`가 호출되고, 실제로는 `win()`이 실행되어 flag가 출력되었습니다. 실습을 통해 free된 메모리가 재할당되면서 함수 포인터가 덮이는 과정을 pwndbg에서 직접 확인할 수 있었습니다.
 
 `06_fixed.c`처럼 `free` 직후 `obj = NULL`만 해 두었어도, `obj`가 NULL이었다면 greet 메뉴에서 바로 막혔을 것 같습니다.
