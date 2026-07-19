@@ -110,10 +110,18 @@ struct Obj {
 
 ### checksec
 
+nano README_report.md
+```
+
+파일 안에서 **`### checksec`** 이라고 써진 줄을 찾으세요. 그 바로 다음 줄에 커서를 놓고, 아래 내용을 그대로 추가하세요 (빈 줄 하나 + 코드블록 + 빈 줄):
+
+```
+```
 RELRO:      Partial RELRO
 Stack:      No canary found
 NX:         NX enabled
 PIE:        No PIE (0x400000)
+```
 
 → NX가 켜져 있어 셸코드 대신 **함수 재사용(win 호출)**으로 공략. PIE가 꺼져 있어 `win` 주소가 항상 `0x401308`로 고정.
 
