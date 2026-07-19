@@ -110,6 +110,11 @@ struct Obj {
 
 ### checksec
 
+RELRO:      Partial RELRO
+Stack:      No canary found
+NX:         NX enabled
+PIE:        No PIE (0x400000)
+
 → NX가 켜져 있어 셸코드 대신 **함수 재사용(win 호출)**으로 공략. PIE가 꺼져 있어 `win` 주소가 항상 `0x401308`로 고정.
 
 ### pwndbg 실습 — 단계별 힙 상태 (직접 빌드·실행하여 확인)
